@@ -890,19 +890,13 @@
   }, { threshold: 0.15 });
   revealEls.forEach(el => revealObserver.observe(el));
 
-  // Contact form → oziparkle@gmail.com (via FormSubmit when hosted; mailto on local file)
+  // Contact form → Railway /feedback → Notion (same pipeline as the app)
   const CONTACT_EMAIL = 'oziparkle@gmail.com';
+  const FEEDBACK_URL = 'https://parkle-app-production.up.railway.app/feedback';
   const contactForm = document.getElementById('contact-form');
   const contactStatus = document.getElementById('contact-status');
   const contactSubmit = document.getElementById('contact-submit');
   const isLocalFile = location.protocol === 'file:';
-
-  if (contactForm && isLocalFile) {
-    contactStatus.className = 'cta-form-status';
-    contactStatus.style.color = 'var(--grey)';
-    contactStatus.textContent =
-      'Preview mode: submit opens your email app. For one-click send, host this page online (see note below).';
-  }
 
   if (contactForm) {
     contactForm.addEventListener('submit', async (event) => {
@@ -922,7 +916,6 @@
 
       const subject = `Parkle landing page — ${name}${role ? ` (${role})` : ''}`;
 
-      // file:// pages cannot use FormSubmit — open the visitor's mail app instead
       if (isLocalFile) {
         const mailBody = [
           `Name: ${name}`,
@@ -943,28 +936,31 @@
       contactStatus.className = 'cta-form-status';
       contactStatus.textContent = 'Sending…';
 
-      const body = new FormData();
-      body.append('name', name);
-      body.append('email', email);
-      body.append('role', role || '—');
-      body.append('message', message);
-      body.append('_subject', subject);
-      body.append('_template', 'table');
-      body.append('_captcha', 'false');
+      const notionMessage = [
+        `Name: ${name}`,
+        `Email: ${email}`,
+        `Role / company: ${role || '—'}`,
+        '',
+        message,
+      ].join('\n');
 
       try {
-        const response = await fetch(`https://formsubmit.co/ajax/${CONTACT_EMAIL}`, {
+        const response = await fetch(FEEDBACK_URL, {
           method: 'POST',
-          body,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            category: 'Landing page contact',
+            message: notionMessage,
+            platform: 'web',
+            appVersion: 'parkle-website',
+          }),
         });
         const json = await response.json().catch(() => ({}));
-        const ok = response.ok && String(json.success).toLowerCase() === 'true';
-        if (!ok) {
-          throw new Error(json.message || 'Send failed');
+        if (!response.ok || json.ok === false) {
+          throw new Error(json.message || json.error || 'Send failed');
         }
         contactStatus.className = 'cta-form-status success';
-        contactStatus.textContent =
-          'Thanks — your message was sent. We’ll be in touch soon. (First time? Check spam for a FormSubmit activation email.)';
+        contactStatus.textContent = 'Thanks — your message was sent. We’ll be in touch soon.';
         contactForm.reset();
       } catch (err) {
         contactStatus.className = 'cta-form-status error';
