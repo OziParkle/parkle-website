@@ -949,10 +949,14 @@
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            category: 'Landing page contact',
+            category: 'other',
             message: notionMessage,
             platform: 'web',
             appVersion: 'parkle-website',
+            landingContact: true,
+            contactName: name,
+            contactEmail: email,
+            contactRole: role,
           }),
         });
         const json = await response.json().catch(() => ({}));
