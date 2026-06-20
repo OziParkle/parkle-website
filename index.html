@@ -945,9 +945,12 @@
       ].join('\n');
 
       try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 20_000);
         const response = await fetch(FEEDBACK_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
           body: JSON.stringify({
             category: 'other',
             message: notionMessage,
@@ -959,6 +962,7 @@
             contactRole: role,
           }),
         });
+        clearTimeout(timeout);
         const json = await response.json().catch(() => ({}));
         if (!response.ok || json.ok === false) {
           throw new Error(json.message || json.error || 'Send failed');
@@ -968,9 +972,12 @@
         contactForm.reset();
       } catch (err) {
         contactStatus.className = 'cta-form-status error';
-        const detail = err instanceof Error && err.message ? ` (${err.message})` : '';
-        contactStatus.textContent =
-          `Could not send right now${detail}. Email us at ${CONTACT_EMAIL} instead.`;
+        const isTimeout = err instanceof Error && err.name === 'AbortError';
+        const detail =
+          err instanceof Error && err.message && !isTimeout ? ` (${err.message})` : '';
+        contactStatus.textContent = isTimeout
+          ? `Request timed out — your message may still have been saved. Email us at ${CONTACT_EMAIL} if unsure.`
+          : `Could not send right now${detail}. Email us at ${CONTACT_EMAIL} instead.`;
       } finally {
         contactSubmit.disabled = false;
       }
