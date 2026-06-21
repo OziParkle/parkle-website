@@ -350,42 +350,46 @@
   .flow {
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
   }
 
   .flow-step {
-    background: var(--black);
-    padding: 28px 32px;
+    padding: 18px 22px;
     display: flex;
-    align-items: center;
-    gap: 24px;
+    align-items: flex-start;
+    gap: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   }
 
-  .flow-icon {
-    font-size: 1.6rem;
-    width: 48px;
-    text-align: center;
+  .flow-step:last-child {
+    border-bottom: none;
+  }
+
+  .flow-index {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: var(--purple);
+    width: 24px;
     flex-shrink: 0;
+    padding-top: 3px;
   }
 
   .flow-label {
     font-family: 'Syne', sans-serif;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 700;
-    letter-spacing: -0.01em;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
   }
 
   .flow-sub {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--grey);
-    margin-top: 2px;
-  }
-
-  .flow-arrow {
-    text-align: center;
-    padding: 4px;
-    color: var(--green);
-    font-size: 1rem;
+    margin-top: 4px;
+    line-height: 1.45;
   }
 
   /* STAT BAR */
@@ -770,31 +774,28 @@
     </div>
     <div class="flow">
       <div class="flow-step">
-        <div class="flow-icon">🚐</div>
+        <div class="flow-index">01</div>
         <div>
           <div class="flow-label">Drive</div>
           <div class="flow-sub">Turn-by-turn to the destination zone</div>
         </div>
       </div>
-      <div class="flow-arrow">↓</div>
       <div class="flow-step">
-        <div class="flow-icon">🅿️</div>
+        <div class="flow-index">02</div>
         <div>
           <div class="flow-label">Park</div>
           <div class="flow-sub">Closest legal spot, surfaced automatically</div>
         </div>
       </div>
-      <div class="flow-arrow">↓</div>
       <div class="flow-step">
-        <div class="flow-icon">🚶</div>
+        <div class="flow-index">03</div>
         <div>
           <div class="flow-label">Walk</div>
           <div class="flow-sub">Walking directions from car to door</div>
         </div>
       </div>
-      <div class="flow-arrow">↓</div>
       <div class="flow-step">
-        <div class="flow-icon">✅</div>
+        <div class="flow-index">04</div>
         <div>
           <div class="flow-label">Arrived</div>
           <div class="flow-sub">Faster, cheaper, less stress</div>
